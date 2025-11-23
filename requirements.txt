@@ -1,0 +1,5 @@
+Flask>=2.3.0
+pyjwt>=2.8.0
+requests>=2.31.0
+PySocks>=1.7.1
+

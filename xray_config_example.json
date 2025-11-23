@@ -1,0 +1,122 @@
+{
+  "log": {
+    "loglevel": "none"
+  },
+  "inbounds": [
+    {
+      "tag": "VLESS_TCP_REALITY_testt",
+      "port": 450,
+      "listen": "0.0.0.0",
+      "protocol": "vless",
+      "settings": {
+        "clients": [],
+        "decryption": "none"
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ]
+      },
+      "streamSettings": {
+        "network": "raw",
+        "security": "reality",
+        "realitySettings": {
+          "show": false,
+          "xver": 0,
+          "target": "yahoo.com:443",
+          "shortIds": [
+            ""
+          ],
+          "privateKey": "ваш_приватный_ключ_здесь",
+          "serverNames": [
+            "yahoo.com",
+            "www.yahoo.com"
+          ]
+        }
+      }
+    },
+    {
+      "port": 10808,
+      "listen": "127.0.0.1",
+      "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "ip": "127.0.0.1"
+      },
+      "tag": "socks5-for-node"
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "DIRECT",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "BLOCK",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "SHADOWSOCKS_REMOTE",
+      "protocol": "shadowsocks",
+      "settings": {
+        "servers": [
+          {
+            "port": 990,
+            "method": "chacha20-ietf-poly1305",
+            "address": "212.102.54.45",
+            "password": "ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44="
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp"
+      }
+    }
+  ],
+  "routing": {
+    "rules": [
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "type": "field",
+        "outboundTag": "BLOCK"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:private"
+        ],
+        "outboundTag": "BLOCK"
+      },
+      {
+        "type": "field",
+        "protocol": [
+          "bittorrent"
+        ],
+        "outboundTag": "BLOCK"
+      },
+      {
+        "type": "field",
+        "network": "tcp,udp",
+        "inboundTag": [
+          "VLESS_TCP_REALITY_testt"
+        ],
+        "outboundTag": "SHADOWSOCKS_REMOTE"
+      },
+      {
+        "type": "field",
+        "inboundTag": [
+          "socks5-for-node"
+        ],
+        "outboundTag": "SHADOWSOCKS_REMOTE"
+      }
+    ],
+    "domainStrategy": "AsIs"
+  }
+}
+
